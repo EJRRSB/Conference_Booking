@@ -90,6 +90,7 @@ $(document).ready(function(){
                     }, "orderable": false
                 },
                 {"data":'is_archived', 'className':'is_archived',"orderable": false},
+                {"data":'added_by_id', 'className':'added_by_id',"orderable": false},
             ],
             'columnDefs': [
                 {
@@ -628,7 +629,7 @@ $(document).ready(function(){
         var currentRow = $(this).closest("tr");
         var id = currentRow.find("td:eq(0)").text();  
         var is_archived = currentRow.find("td:eq(12)").text();  
- 
+        var added_by_id = currentRow.find("td:eq(13)").text();  
  
         $.ajax({
             url: 'bookings/getBookingById/' + id,
@@ -711,8 +712,10 @@ $(document).ready(function(){
                     
                     }else if (dataResult.message.status == 'Approved') {  
                         $('#cancel_booking_button').show();
-                    } else if (dataResult.message.status == 'Canceled') {  
-                        $('#rebook_booking_button').show();
+                    } else if (dataResult.message.status == 'Canceled') { 
+                        if(added_by_id == $('#user_id').text()) {
+                            $('#rebook_booking_button').show();
+                        }
                     } 
 
                     if(is_archived == '1'){ 

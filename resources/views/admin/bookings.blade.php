@@ -1,7 +1,7 @@
 @extends('layouts.main', ['active' => 'bookings'])
 @section('content') 
 <style>
-    .id, .room_id, .is_archived {
+    .id, .room_id, .is_archived, .added_by_id {
         display: none;
     } 
     .dot {
@@ -92,6 +92,7 @@
                                 <th>Date Filed</th>
                                 <th>Actions</th>
                                 <th>Archived</th>
+                                <th>Added By Id</th>
                             </tr>
                         </thead>
                         <tfoot>
@@ -109,6 +110,7 @@
                                 <th>Date Filed</th>
                                 <th>Actions</th>
                                 <th>Archived</th>
+                                <th>Added By Id</th>
                             </tr>
                         </tfoot>
                         <tbody> 
@@ -121,6 +123,7 @@
     </div> 
 
 
+    <p id="user_id" style="display: none;">{{auth()->user()->id}}</p>
     <p id="role" style="display: none;">{{auth()->user()->role}}</p>
     <p id="auth_email" style="display: none;">{{auth()->user()->email}}</p>
 

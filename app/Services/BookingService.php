@@ -91,6 +91,7 @@ class BookingService extends BaseService
                 "approver"       => $this->getApprover($record->status, $record),
                 "created_at"     =>  date_format($record->created_at,"Y-m-d h:i A"),   
                 "is_archived"     =>  $status === '5' ? '1' : '2',  
+                "added_by_id"       => $record->user->id, 
             );
         }
          
