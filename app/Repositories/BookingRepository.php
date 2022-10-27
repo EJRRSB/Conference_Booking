@@ -271,7 +271,7 @@ class BookingRepository
     
     public function getPastPendingBooking(){   
         return Booking::select('bookings.*')->with('user')->with('room')->with('approved')->with('declined')->with('participants')->with('participants.user')  
-            ->where('start_time','>', date('Y-m-d') . ' 00:00:00')    
+            ->where('start_time','<', date('Y-m-d') . ' 00:00:00')    
             ->where('status', '2')    
             ->whereRelation('room', 'deleted_at', '=', null)
             ->orderBy('start_time','asc') 
