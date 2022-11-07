@@ -142,9 +142,14 @@ class BookingService extends BaseService
         }
 
         if($request['booking_option'] === 'Does Not Repeat'){
-            
-            if($request['start_time'] < date("Y-m-d H:i:s",strtotime('+30 minutes',strtotime(date("Y-m-d H:i:s"))))){ 
-                return $this->returnJson('201', "Booking should be made 30 mins before schedule."); 
+            if(auth()->user()->role === '1'){
+                if($request['start_time'] < date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")))){  
+                    return $this->returnJson('201', "Booking should be made 1 min before schedule."); 
+                }
+            }else{
+                if($request['start_time'] < date("Y-m-d H:i:s",strtotime('+30 minutes',strtotime(date("Y-m-d H:i:s"))))){ 
+                    return $this->returnJson('201', "Booking should be made 30 mins before schedule."); 
+                }
             }
 
         } 
@@ -170,7 +175,7 @@ class BookingService extends BaseService
     }
 
 
-    public function toMail(): MailMessage
+    public function toMail(): MailMessage // test
     { 
         $calendar = Calendar::create()
             ->productIdentifier('Kutac.cz')
@@ -239,7 +244,7 @@ class BookingService extends BaseService
 
 
     public function recurringBooking($request, $data){
-
+        
         $error_message               = '';
         $recurring_dates             = $this->getArrayCount($request['recurring_dates']); 
         $recurring_booked_dates      = '';
@@ -247,14 +252,24 @@ class BookingService extends BaseService
         $counter                     = 0;
         foreach($recurring_dates as $recurring_date) {  
 
-            if($recurring_date . ' ' .  $request['booking_start_time'] < date("Y-m-d H:i:s",strtotime('+30 minutes',strtotime(date("Y-m-d H:i:s"))))){  
-                $recurring_unavailable_dates = $recurring_unavailable_dates === '' ?  $recurring_date : $recurring_unavailable_dates . ', ' . $recurring_date;     
+            
+            if(auth()->user()->role === '1'){ 
+                if($recurring_date . ' ' .  $request['booking_start_time'] < date("Y-m-d H:i:s",strtotime('+1 minutes',strtotime(date("Y-m-d H:i:s"))))){  
+                    $recurring_unavailable_dates = $recurring_unavailable_dates === '' ?  $recurring_date : $recurring_unavailable_dates . ', ' . $recurring_date;     
+                    continue;
+                }
+            }else{
+                if($recurring_date . ' ' .  $request['booking_start_time'] < date("Y-m-d H:i:s",strtotime('+30 minutes',strtotime(date("Y-m-d H:i:s"))))){  
+                    $recurring_unavailable_dates = $recurring_unavailable_dates === '' ?  $recurring_date : $recurring_unavailable_dates . ', ' . $recurring_date;     
+                    continue;
+                }
             }
             
             $data['start_time'] =  $recurring_date . ' ' .  $request['booking_start_time'];
             $data['end_time']   =  $recurring_date . ' ' .  $request['booking_end_time'];
 
             $validation =  $this->repository->validationRoomAvailability($data);  
+            
             if(!empty($validation)){ 
                 $error_message               = $error_message . " This room is no longer available for this date and time". $recurring_date . " " .  $request['booking_start_time'] .". Please select another.";
                 $recurring_unavailable_dates = $recurring_unavailable_dates === '' ?  $recurring_date : $recurring_unavailable_dates . ', ' . $recurring_date;              

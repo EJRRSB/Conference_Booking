@@ -81,11 +81,21 @@ class BookingController extends Controller
                     "message"    => "Date is required"
                 )); 
             }
-            if($request['booking_date'] . ' ' .  $request['booking_start_time'] < date("Y-m-d H:i:s",strtotime('+30 minutes',strtotime(date("Y-m-d H:i:s"))))){
-                return json_encode(array(
-                    "statusCode" => 201,
-                    "message"    => "Error! Booking should be made 30 mins before schedule."
-                )); 
+            
+            if(auth()->user()->role === '1'){
+                if($request['booking_date'] . ' ' .  $request['booking_start_time'] < date("Y-m-d H:i:s",strtotime('+1 minutes',strtotime(date("Y-m-d H:i:s"))))){ 
+                    return json_encode(array(
+                        "statusCode" => 201,
+                        "message"    => "Error! Booking should be made 1 min before schedule."
+                    )); 
+                }
+            }else{
+                if($request['booking_date'] . ' ' .  $request['booking_start_time'] < date("Y-m-d H:i:s",strtotime('+30 minutes',strtotime(date("Y-m-d H:i:s"))))){
+                    return json_encode(array(
+                        "statusCode" => 201,
+                        "message"    => "Error! Booking should be made 30 mins before schedule."
+                    )); 
+                }
             }
         } 
   
